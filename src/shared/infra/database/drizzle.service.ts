@@ -1,7 +1,10 @@
-import * as schema from "@academic/students/infra/database/schemas/student.schema";
+import * as studentsSchemas from "@academic/students/infra/database/schemas/student.schema";
+import * as teachersSchemas from "@academic/teachers/infra/database/schemas/teacher.schema";
 import { Injectable, type OnModuleDestroy } from "@nestjs/common";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+
+const schema = { ...studentsSchemas, ...teachersSchemas };
 
 @Injectable()
 export class DrizzleService implements OnModuleDestroy {
