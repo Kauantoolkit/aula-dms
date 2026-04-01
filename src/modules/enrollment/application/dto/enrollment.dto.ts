@@ -1,4 +1,15 @@
+import { IsNotEmpty, IsString } from "class-validator";
 import type { Enrollment } from "@enrollment/domain/models/enrollment.entity";
+
+export class CreateEnrollmentDto {
+  @IsString()
+  @IsNotEmpty()
+  studentId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  classOfferingId: string;
+}
 
 export class EnrollmentDto {
   private constructor(

@@ -1,4 +1,8 @@
-import { StudentDto } from "@academic/students/application/dto/student.dto";
+import {
+  CreateStudentDto,
+  StudentDto,
+  UpdateStudentDto,
+} from "@academic/students/application/dto/student.dto";
 import { StudentService } from "@academic/students/application/services/student.service";
 import {
   Body,
@@ -25,12 +29,12 @@ export class StudentsController {
   }
 
   @Post()
-  async create(@Body() body: StudentDto) {
+  async create(@Body() body: CreateStudentDto) {
     return this.studentService.create(body);
   }
 
   @Put(":id")
-  async update(@Param("id") id: string, @Body() body: StudentDto) {
+  async update(@Param("id") id: string, @Body() body: UpdateStudentDto) {
     return this.studentService.edit(id, body);
   }
 

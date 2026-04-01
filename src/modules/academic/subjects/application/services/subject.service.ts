@@ -1,4 +1,8 @@
-import { SubjectDto } from "@academic/subjects/application/dto/subject.dto";
+import {
+  CreateSubjectDto,
+  SubjectDto,
+  UpdateSubjectDto,
+} from "@academic/subjects/application/dto/subject.dto";
 import { Subject } from "@academic/subjects/domain/models/subject.entity";
 import {
   SUBJECT_REPOSITORY,
@@ -18,7 +22,7 @@ export class SubjectService {
     private readonly subjectRepository: SubjectRepository,
   ) {}
 
-  async create(dto: SubjectDto): Promise<void> {
+  async create(dto: CreateSubjectDto): Promise<void> {
     const existing = await this.subjectRepository.findByCode(dto.code);
 
     if (existing) {
@@ -29,7 +33,7 @@ export class SubjectService {
     await this.subjectRepository.create(subject!);
   }
 
-  async edit(id: string, dto: SubjectDto): Promise<void> {
+  async edit(id: string, dto: UpdateSubjectDto): Promise<void> {
     const subject = await this.subjectRepository.findById(id);
 
     if (!subject) {
@@ -44,11 +48,18 @@ export class SubjectService {
       }
     }
 
-    subject
-      .withName(dto.name)
-      .withCode(dto.code)
-      .withWorkload(dto.workload)
-      .withDescription(dto.description);
+    if (dto.name !== undefined) {
+      subject.withName(dto.name);
+    }
+    if (dto.code !== undefined) {
+      subject.withCode(dto.code);
+    }
+    if (dto.workload !== undefined) {
+      subject.withWorkload(dto.workload);
+    }
+    if (dto.description !== undefined) {
+      subject.withDescription(dto.description);
+    }
 
     await this.subjectRepository.update(subject);
   }

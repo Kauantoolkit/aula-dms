@@ -1,4 +1,8 @@
-import { SubjectDto } from "@academic/subjects/application/dto/subject.dto";
+import {
+  CreateSubjectDto,
+  SubjectDto,
+  UpdateSubjectDto,
+} from "@academic/subjects/application/dto/subject.dto";
 import { SubjectService } from "@academic/subjects/application/services/subject.service";
 import {
   Body,
@@ -25,12 +29,12 @@ export class SubjectsController {
   }
 
   @Post()
-  async create(@Body() body: SubjectDto) {
+  async create(@Body() body: CreateSubjectDto) {
     return this.subjectService.create(body);
   }
 
   @Put(":id")
-  async update(@Param("id") id: string, @Body() body: SubjectDto) {
+  async update(@Param("id") id: string, @Body() body: UpdateSubjectDto) {
     return this.subjectService.edit(id, body);
   }
 

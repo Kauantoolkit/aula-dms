@@ -1,4 +1,5 @@
 import { EnrollmentService } from "@enrollment/application/services/enrollment.service";
+import { CreateEnrollmentDto } from "@enrollment/application/dto/enrollment.dto";
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 
 @Controller("enrollments")
@@ -11,7 +12,7 @@ export class EnrollmentsController {
   }
 
   @Post()
-  async enroll(@Body() body: { studentId: string; classOfferingId: string }) {
+  async enroll(@Body() body: CreateEnrollmentDto) {
     return this.enrollmentService.enroll(body);
   }
 

@@ -1,4 +1,7 @@
-import { ClassOfferingDto } from "@class-offering/application/dto/class-offering.dto";
+import {
+  ClassOfferingDto,
+  CreateClassOfferingDto,
+} from "@class-offering/application/dto/class-offering.dto";
 import {
   ClassOffering,
   ClassOfferingStatus,
@@ -16,12 +19,7 @@ export class ClassOfferingService {
     private readonly classOfferingRepository: ClassOfferingRepository,
   ) {}
 
-  async create(dto: {
-    subjectId: string;
-    teacherId: string;
-    startDate: Date;
-    endDate: Date;
-  }): Promise<void> {
+  async create(dto: CreateClassOfferingDto): Promise<void> {
     const classOffering = ClassOffering.restore({
       subjectId: dto.subjectId,
       teacherId: dto.teacherId,

@@ -1,4 +1,8 @@
-import { StudentDto } from "@academic/students/application/dto/student.dto";
+import {
+  CreateStudentDto,
+  StudentDto,
+  UpdateStudentDto,
+} from "@academic/students/application/dto/student.dto";
 import { Student } from "@academic/students/domain/models/student.entity";
 import {
   STUDENT_REPOSITORY,
@@ -18,7 +22,7 @@ export class StudentService {
     private readonly studentRepository: StudentRepository,
   ) {}
 
-  async create(dto: StudentDto): Promise<void> {
+  async create(dto: CreateStudentDto): Promise<void> {
     const existing = await this.studentRepository.findByEmail(dto.email);
 
     if (existing) {
@@ -29,7 +33,7 @@ export class StudentService {
     await this.studentRepository.create(student!);
   }
 
-  async edit(id: string, dto: StudentDto): Promise<void> {
+  async edit(id: string, dto: UpdateStudentDto): Promise<void> {
     const student = await this.studentRepository.findById(id);
 
     if (!student) {
@@ -44,7 +48,19 @@ export class StudentService {
       }
     }
 
-    student.withName(dto.name).withEmail(dto.email).withDocument(dto.document);
+    if (dto.name !== undefined) {
+      student.withName(dto.name);
+    }
+    if (dto.email !== undefined) {
+      student.withEmail(dto.email);
+    }
+    if (dto.document !== undefined) {
+      student.withDocument(dto.document);
+    }
+    if (dto.registration !== undefined) {
+      student.withRegistration(dto.registration);
+    }
+
     await this.studentRepository.update(student!);
   }
 

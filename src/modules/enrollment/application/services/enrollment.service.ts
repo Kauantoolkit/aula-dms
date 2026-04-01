@@ -1,4 +1,7 @@
-import { EnrollmentDto } from "@enrollment/application/dto/enrollment.dto";
+import {
+  CreateEnrollmentDto,
+  EnrollmentDto,
+} from "@enrollment/application/dto/enrollment.dto";
 import {
   Enrollment,
   EnrollmentStatus,
@@ -21,10 +24,7 @@ export class EnrollmentService {
     private readonly enrollmentRepository: EnrollmentRepository,
   ) {}
 
-  async enroll(dto: {
-    studentId: string;
-    classOfferingId: string;
-  }): Promise<void> {
+  async enroll(dto: CreateEnrollmentDto): Promise<void> {
     const existing =
       await this.enrollmentRepository.findByStudentAndClassOffering(
         dto.studentId,

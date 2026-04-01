@@ -1,5 +1,8 @@
 import { ClassOfferingService } from "@class-offering/application/services/class-offering.service";
-import { ClassOfferingStatus } from "@class-offering/domain/models/class-offering.entity";
+import {
+  ChangeClassOfferingStatusDto,
+  CreateClassOfferingDto,
+} from "@class-offering/application/dto/class-offering.dto";
 import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 
 @Controller("class-offerings")
@@ -17,22 +20,14 @@ export class ClassOfferingsController {
   }
 
   @Post()
-  async create(
-    @Body()
-    body: {
-      subjectId: string;
-      teacherId: string;
-      startDate: Date;
-      endDate: Date;
-    },
-  ) {
+  async create(@Body() body: CreateClassOfferingDto) {
     return this.classOfferingService.create(body);
   }
 
   @Patch(":id/status")
   async changeStatus(
     @Param("id") id: string,
-    @Body() body: { status: ClassOfferingStatus },
+    @Body() body: ChangeClassOfferingStatusDto,
   ) {
     return this.classOfferingService.changeStatus(id, body.status);
   }

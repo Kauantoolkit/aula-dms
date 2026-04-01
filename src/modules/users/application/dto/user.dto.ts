@@ -1,8 +1,10 @@
-import type { Permission } from "@shared/domain/enums/permission.enum";
+import { Permission } from "@shared/domain/enums/permission.enum";
 import type { User } from "@users/domain/models/user.entity";
 import {
   IsArray,
   IsEmail,
+  IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
@@ -11,10 +13,12 @@ import {
 
 export class CreateUserDto {
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @IsString()
   @MinLength(6)
+  @IsNotEmpty()
   password: string;
 
   @IsOptional()
@@ -22,18 +26,20 @@ export class CreateUserDto {
   teacherId?: string;
 
   @IsArray()
-  @IsString({ each: true })
+  @IsEnum(Permission, { each: true })
   permissions: Permission[];
 }
 
 export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
+  @IsNotEmpty()
   email?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(6)
+  @IsNotEmpty()
   password?: string;
 
   @IsOptional()
@@ -42,7 +48,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
+  @IsEnum(Permission, { each: true })
   permissions?: Permission[];
 }
 
