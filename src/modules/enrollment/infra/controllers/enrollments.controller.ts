@@ -3,14 +3,18 @@ import { EnrollmentDto } from "@enrollment/application/dto/enrollment.dto";
 import {
   Body,
   Controller,
-  Delete,
+  DefaultValuePipe,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
+  Query,
   Req,
 } from "@nestjs/common";
+
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
 
@@ -19,31 +23,24 @@ import type { Request } from "express";
 export class EnrollmentsController {
   constructor(private readonly enrollmentService: EnrollmentService) {}
 
-  @Get("class-offering/:classOfferingId")
-  @ApiOperation({ summary: "Listar matrículas de uma turma" })
-  @ApiParam({ name: "classOfferingId", type: "string" })
-  @ApiResponse({ status: 200, description: "Lista de matrículas com HATEOAS" })
+@Get()
+  @ApiOperation({ summary: "Listar matrículas por turma (filtros)" })
+  @ApiResponse({ status: 200, description: "Lista de matrículas paginada" })
   async findByClassOffering(
-    @Param("classOfferingId") classOfferingId: string,
+    @Query("class_offering_id") classOfferingId: string,
+    @Query("_page", new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query("_size", new DefaultValuePipe(10), ParseIntPipe) size: number,
     @Req() req: Request,
   ) {
-    const enrollments = await this.enrollmentService.listByClassOffering(
+    const result = await this.enrollmentService.listPaginatedByClassOffering(
       classOfferingId,
+      page,
+      size,
       this.baseUrl(req),
     );
-
-    return {
-      _links: {
-        self: {
-          href: `${this.baseUrl(req)}/enrollments/class-offering/${classOfferingId}`,
-          method: "GET",
-        },
-        create: { href: `${this.baseUrl(req)}/enrollments`, method: "POST" },
-      },
-      count: enrollments.length,
-      enrollments,
-    };
+    return result;
   }
+
 
   @Get(":id")
   @ApiOperation({ summary: "Buscar matrícula por ID" })
@@ -75,14 +72,16 @@ export class EnrollmentsController {
     return this.enrollmentService.enroll(body, this.baseUrl(req));
   }
 
-  @Delete(":id")
+  @Patch(":id/cancel")
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: "Cancelar matrícula" })
   @ApiParam({ name: "id", type: "string" })
-  @ApiResponse({ status: 200, type: EnrollmentDto })
+  @ApiResponse({ status: 204, description: "Matrícula cancelada com sucesso" })
   @ApiResponse({ status: 404, description: "Matrícula não encontrada" })
-  async cancel(@Param("id") id: string, @Req() req: Request) {
-    return this.enrollmentService.cancel(id, this.baseUrl(req));
+  async cancel(@Param("id") id: string) {
+    await this.enrollmentService.cancelEnrollment(id);
   }
+
 
   private baseUrl(req: Request): string {
     return `${req.protocol}://${req.get("host")}`;

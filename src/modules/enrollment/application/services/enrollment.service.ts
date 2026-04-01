@@ -77,4 +77,37 @@ export class EnrollmentService {
       await this.enrollmentRepository.findByClassOfferingId(classOfferingId);
     return response.map((row) => EnrollmentDto.from(row, baseUrl)!);
   }
+
+  async listPaginatedByClassOffering(
+    classOfferingId: string,
+    page: number = 1,
+    size: number = 10,
+    baseUrl = "",
+  ): Promise<{
+    data: EnrollmentDto[];
+    meta: {
+      totalItems: number;
+      itemsPerPage: number;
+      currentPage: number;
+      totalPages: number;
+    };
+  }> {
+    const { data: enrollments, total } = await this.enrollmentRepository.findPaginatedByClassOfferingId(classOfferingId, page, size);
+    const data = enrollments.map((row) => EnrollmentDto.from(row, baseUrl)!);
+    const totalPages = Math.ceil(total / size);
+    return {
+      data,
+      meta: {
+        totalItems: total,
+        itemsPerPage: size,
+        currentPage: page,
+        totalPages,
+      },
+    };
+  }
+
+  async cancelEnrollment(id: string): Promise<void> {
+    await this.enrollmentRepository.cancel(id);
+  }
+
 }

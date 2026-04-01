@@ -6,7 +6,8 @@ import type { EnrollmentRepository } from "@enrollment/domain/repositories/enrol
 import { enrollmentsSchema } from "@enrollment/infra/schemas/enrollment.schema";
 import { Injectable } from "@nestjs/common";
 import { DrizzleService } from "@shared/infra/database/drizzle.service";
-import { and, eq } from "drizzle-orm";
+import { and, eq, count } from "drizzle-orm";
+
 
 @Injectable()
 export class DrizzleEnrollmentRepository implements EnrollmentRepository {
@@ -64,7 +65,7 @@ export class DrizzleEnrollmentRepository implements EnrollmentRepository {
     });
   }
 
-  async findByClassOfferingId(classOfferingId: string): Promise<Enrollment[]> {
+async findByClassOfferingId(classOfferingId: string): Promise<Enrollment[]> {
     const rows = await this.drizzleService.db
       .select()
       .from(enrollmentsSchema)
@@ -78,6 +79,32 @@ export class DrizzleEnrollmentRepository implements EnrollmentRepository {
         })!,
     );
   }
+
+  async findPaginatedByClassOfferingId(classOfferingId: string, page: number, limit: number): Promise<{data: Enrollment[], total: number}> {
+    const offset = (page - 1) * limit;
+    const [rows, totalRows] = await Promise.all([
+      this.drizzleService.db
+        .select()
+        .from(enrollmentsSchema)
+        .where(eq(enrollmentsSchema.classOfferingId, classOfferingId))
+        .offset(offset)
+        .limit(limit),
+      this.drizzleService.db
+        .select({ count: count() })
+        .from(enrollmentsSchema)
+        .where(eq(enrollmentsSchema.classOfferingId, classOfferingId))
+    ]);
+    const total = Number(totalRows[0]?.count ?? 0);
+    const data = rows.map(
+      (row) =>
+        Enrollment.restore({
+          ...row,
+          status: row.status as EnrollmentStatus,
+        })!,
+    );
+    return {data, total};
+  }
+
 
   async findByStudentAndClassOffering(
     studentId: string,

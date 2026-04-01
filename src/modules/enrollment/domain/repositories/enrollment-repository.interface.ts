@@ -7,8 +7,10 @@ export interface EnrollmentRepository {
   cancel(id: string): Promise<Enrollment>;
   findById(id: string): Promise<Enrollment | null>;
   findByClassOfferingId(classOfferingId: string): Promise<Enrollment[]>;
+  findPaginatedByClassOfferingId(classOfferingId: string, page: number, limit: number): Promise<{data: Enrollment[], total: number}>;
   findByStudentAndClassOffering(
     studentId: string,
     classOfferingId: string,
   ): Promise<Enrollment | null>;
 }
+
