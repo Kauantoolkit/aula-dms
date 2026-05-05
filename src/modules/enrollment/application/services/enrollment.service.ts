@@ -14,6 +14,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import type { PaginatedResult } from "@shared/infra/hateoas";
+import { QueueMappingService } from "@messaging/application/services/queue-mapping.service";
 
 interface ListParams {
   classOfferingId?: string;
@@ -26,6 +27,7 @@ export class EnrollmentService {
   constructor(
     @Inject(ENROLLMENT_REPOSITORY)
     private readonly enrollmentRepository: EnrollmentRepository,
+    private readonly queueMappingService: QueueMappingService,
   ) {}
 
   async listPaginated(params: ListParams): Promise<PaginatedResult<Enrollment>> {
@@ -61,7 +63,17 @@ export class EnrollmentService {
       enrolledAt: new Date(),
     });
 
-    return await this.enrollmentRepository.create(enrollment!);
+    const created = await this.enrollmentRepository.create(enrollment!);
+
+    await this.queueMappingService.publishEnrollmentCreated({
+      enrollmentId: created.id,
+      studentId: dto.studentId,
+      classOfferingId: dto.classOfferingId,
+      status: created.status,
+      enrolledAt: created.enrolledAt,
+    });
+
+    return created;
   }
 
   async cancel(id: string): Promise<void> {
@@ -72,6 +84,14 @@ export class EnrollmentService {
     }
 
     await this.enrollmentRepository.cancel(id);
+
+    await this.queueMappingService.publishEnrollmentCanceled({
+      enrollmentId: id,
+      studentId: enrollment.studentId,
+      classOfferingId: enrollment.classOfferingId,
+      status: "canceled",
+      canceledAt: new Date(),
+    });
   }
 
   async findById(id: string): Promise<Enrollment | null> {

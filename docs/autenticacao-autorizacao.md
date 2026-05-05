@@ -1,3 +1,7 @@
+
+
+NÃO SE APLICA NESSE MICROSERVIÇO
+
 # Autenticação e Autorização com NestJS + JWT
 
 Este guia mostra como implementar autenticação via JWT e autorização baseada em permissões em uma API NestJS seguindo Clean Architecture.

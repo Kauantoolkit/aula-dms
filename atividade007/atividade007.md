@@ -1,0 +1,1 @@
+Adequar o banco de dados para ser especialista no micro serviço da equipe. A alteração deve ocorrer nos schemas e a migration com as alterações deve ser gerada com as adequações do banco de dados.

@@ -6,7 +6,7 @@ import type { EnrollmentRepository } from "@enrollment/domain/repositories/enrol
 import { enrollmentsSchema } from "@enrollment/infra/schemas/enrollment.schema";
 import { Injectable } from "@nestjs/common";
 import { DrizzleService } from "@shared/infra/database/drizzle.service";
-import { and, count, eq, sql } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 
 @Injectable()
 export class DrizzleEnrollmentRepository implements EnrollmentRepository {
